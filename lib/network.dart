@@ -55,13 +55,13 @@ class Network {
         data: FormData.fromMap(
             {
               code: code2,
-              'login': login,
-              'password': password,
+              'login': 'пОнИиИ',
+              'password': 'анальный_мудрец',
               'redirection': '',
               'isBoxStyle': ''
             }
         ));
-    print(loginResponse.statusCode);
+    //print(loginResponse.statusCode);
     print(loginResponse.headers);
 
   }
@@ -79,4 +79,11 @@ class Network {
         ));
     print(nextResponse.data);
   }
+
+  Future<String> getData() async {
+    var response = await dio.get(
+        "https://www.lowadi.com/marche/noir/");
+    return response.data;
+  }
+
 }

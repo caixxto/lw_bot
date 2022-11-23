@@ -6,55 +6,138 @@ import 'package:lw/main/bloc/main_bloc.dart';
 import 'package:lw/main/bloc/main_state.dart';
 import 'package:lw/styles/colors.dart';
 import 'package:lw/styles/text_styles.dart';
+import 'package:lw/widgets/login_tf.dart';
 
 import 'bloc/main_event.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  MainScreen({super.key});
+
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-      return BlocBuilder<MainBloc, MainState>(
-          builder: (context, state) {
-            switch (state.runtimeType) {
-              case InitialState:
-                return Container();
-              case UpdateScreen:
-                var text = (state as UpdateScreen).text;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 0, top: 0, bottom: 0),
-                      child: Container(
-                        width: 150,
-                        color: const Color.fromRGBO(34, 34, 34, 100),
-                        child: Column(
-                          children: const [
-                            Text('Account 1', style: CustomStyles.defaultText),
-                            Text('Account 2', style: CustomStyles.defaultText),
-                            Text('Account 3', style: CustomStyles.defaultText),
-                          ],
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(41, 41, 41, 100),
+      appBar: AppBar(
+        backgroundColor: Colors.black26,
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black26,
+            ),
+            onPressed: () {
+              showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.black12,
+                      title: Text('Добавить аккаунт'),
+                      actions: [
+                        TextFieldWidget(
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          onChanged: (value) {},
+                          validator: (value) {},
+                          controller: _loginController,
                         ),
-                      ),
+                        TextFieldWidget(
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          onChanged: (value) {},
+                          validator: (value) {},
+                          controller: _passwordController,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              context.read<MainBloc>().add(AddNewAccount(_loginController.text, _passwordController.text));
+                              Navigator.of(context).pop();
+                              },
+                            child: Text('Log in')
+                        ),
+                        ElevatedButton(
+                            onPressed: () { Navigator.of(context).pop(); },
+                            child: Text('Close')
+                        ),
+                      ],
+                    );
+                  }
+              );
+            },
+            child:
+                const Text('Добавить аккаунт', style: CustomStyles.appBarText),
+          ),
+          const SizedBox(width: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black26,
+            ),
+            onPressed: () {
+              context.read<MainBloc>().add(Lug());
+            },
+            child: const Text('Собрать луга', style: CustomStyles.appBarText),
+          ),
+          const SizedBox(width: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black26,
+            ),
+            onPressed: () {
+              context.read<MainBloc>().add(Lug2());
+            },
+            child: const Text('Собрать мастерские',
+                style: CustomStyles.appBarText),
+          )
+        ],
+      ),
+      body: BlocBuilder<MainBloc, MainState>(builder: (context, state) {
+        switch (state.runtimeType) {
+          case InitialState:
+            return Container();
+          case UpdateScreen:
+            var accounts = (state as UpdateScreen).accounts;
+            return Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  color: Colors.blueGrey,
+                  child: Column(
+                    children: List.generate(accounts.length, (index) {
+                      final account = accounts[index];
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Text(account.login),
+                      );
+                    })
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.grey,
+                    child: Column(
+                      children: [
+                        Text('4444444444444444444444444'),
+                      ],
                     ),
-                    Container(
-                      color: const Color.fromRGBO(41, 41, 41, 100),
-                      child: Text('c'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 0, top: 0, bottom: 0),
-                      child: Container(
-                        width: 300,
-                        color: const Color.fromRGBO(34, 34, 34, 100),
-                        child: Text(''),
-                      ),
-                    )
-                  ],
-                );
-            }
-            return Placeholder();
-      });
+                  ),
+                ),
+                Container(
+                    width: 200,
+                    color: Colors.blueGrey,
+                    child: Column(
+                      children: [
+                        Text(''),
+                      ],
+                    ))
+              ],
+            );
+        }
+        return Placeholder();
+      }),
+    );
   }
 }

@@ -55,35 +55,60 @@ class Network {
         data: FormData.fromMap(
             {
               code: code2,
-              'login': 'пОнИиИ',
-              'password': 'анальный_мудрец',
+              'login': login,
+              'password': password,
               'redirection': '',
               'isBoxStyle': ''
             }
         ));
-    //print(loginResponse.statusCode);
     print(loginResponse.headers);
 
   }
 
-  void buyBox() async {
-    var nextResponse = await dio.post(
-        "https://www.lowadi.com/marche/achat",
-        data: FormData.fromMap(
-            {
-              'id': '111',
-              'mode': 'centre',
-              'nombre': '1',
-              'typeRedirection': 'box'
-            }
-        ));
-    print(nextResponse.data);
-  }
+  // void lug() async {
+  //   var resp = await dio.get('https://www.lowadi.com/centre/pres');
+  // }
 
-  Future<String> getData() async {
+  // void buyBox() async {
+  //   var nextResponse = await dio.post(
+  //       "https://www.lowadi.com/marche/achat",
+  //       data: FormData.fromMap(
+  //           {
+  //             'id': '111',
+  //             'mode': 'centre',
+  //             'nombre': '1',
+  //             'typeRedirection': 'box'
+  //           }
+  //       ));
+  //   print(nextResponse.data);
+  // }
+  //
+  Future<String> getMeadows() async {
     var response = await dio.get(
-        "https://www.lowadi.com/marche/noir/");
+        "https://www.lowadi.com/centre/pres/");
     return response.data;
+  }
+  
+  void collectSkin(id) async {
+    var response = await dio.post(
+        'https://www.lowadi.com/centre/pres/doUse',
+            data:  FormData.fromMap(
+        {
+          'searchString': 'taille%3Dall%26etat%3D0%26etatComparaison%3Dg%26utilisation%3Dall',
+          'page': '0',
+          'action': 'recolter',
+          'type': 'simple',
+          'redirectType': 'pres',
+          'id[]': '$id',
+          // 'message': 'recolte',
+          // 'taille': 'all',
+          // 'etat': '0',
+          // 'etatComparaison': 'g',
+          // 'utilisation': 'all',
+          // 'type': 'pres',
+        }
+        ));
+    print(response.headers);
   }
 
 }

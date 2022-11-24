@@ -25,21 +25,126 @@ class Network {
     ));
   }
 
-  void login(login, password) async {
+  String c(response) {
+    RegExp exp = RegExp("id=\"authentification(.{5})\" type");
+    RegExpMatch? match = exp.firstMatch(response.data);
+    const start = 'authentification';
+    const end = '"';
+    final startIndex = match![0]!.indexOf(start);
+    final endIndex = match![0]!.indexOf(end, startIndex + start.length);
+    final code = match![0]!.substring(startIndex + start.length, endIndex);
+    RegExp exp2 = RegExp("value=\"(.{32})\" name=");
+    RegExpMatch? match2 = exp2.firstMatch(response.data);
+    const start2 = 'value="';
+    const end2 = '"';
+    final startIndex2 = match2![0]!.indexOf(start2);
+    final endIndex2 = match2![0]!.indexOf(end2, startIndex2 + start2.length);
+    final code2 = match2![0]!
+        .substring(startIndex2 + start2.length, endIndex2)
+        .toLowerCase();
+    print('code returned');
+
+    return code;
+  }
+  String c2(response) {
+    RegExp exp = RegExp("id=\"authentification(.{5})\" type");
+    RegExpMatch? match = exp.firstMatch(response.data);
+    const start = 'authentification';
+    const end = '"';
+    final startIndex = match![0]!.indexOf(start);
+    final endIndex = match![0]!.indexOf(end, startIndex + start.length);
+    final code = match![0]!.substring(startIndex + start.length, endIndex);
+    RegExp exp2 = RegExp("value=\"(.{32})\" name=");
+    RegExpMatch? match2 = exp2.firstMatch(response.data);
+    const start2 = 'value="';
+    const end2 = '"';
+    final startIndex2 = match2![0]!.indexOf(start2);
+    final endIndex2 = match2![0]!.indexOf(end2, startIndex2 + start2.length);
+    final code2 = match2![0]!
+        .substring(startIndex2 + start2.length, endIndex2)
+        .toLowerCase();
+    print('code2 returned');
+
+    return code2;
+  }
+
+  Future<void> login(login, password) async {
     create();
 
     dio.interceptors.add(CookieManager(CookieJar()));
 
     var firstResponse = await dio.get(
         "https://www.lowadi.com");
+    final data = firstResponse;
 
-    RegExp exp = RegExp("id=\"authentification(.{5})\" type");
-    RegExpMatch? match = exp.firstMatch(firstResponse.data);
-    const start = 'authentification';
-    const end = '"';
-    final startIndex = match![0]!.indexOf(start);
-    final endIndex = match![0]!.indexOf(end, startIndex + start.length);
-    final code = match![0]!.substring(startIndex + start.length, endIndex);
+    await Future.delayed(Duration(seconds: 1), () async {
+      var loginResponse = await dio.post(
+          "https://www.lowadi.com/site/doLogIn",
+          data: FormData.fromMap(
+              {
+                c(data): c2(data),
+                'login': login,
+                'password': password,
+                'redirection': '',
+                'isBoxStyle': ''
+              }
+          ));
+      print(loginResponse.headers);
+    });
+
+    //print(loginResponse.headers);
+    print('Log In $login');
+
+  }
+
+  Future<String> getMeadows() async {
+    var response = await dio.get(
+        "https://www.lowadi.com/centre/pres/");
+    print('Get Meadows');
+    return response.data;
+  }
+
+  Future<void> collectSkin(id) async {
+    var response = await dio.post(
+        'https://www.lowadi.com/centre/pres/doUse',
+            data:  FormData.fromMap(
+        {
+          'searchString': 'taille%3Dall%26etat%3D0%26etatComparaison%3Dg%26utilisation%3Dall',
+          'page': '0',
+          'action': 'recolter',
+          'type': 'simple',
+          'redirectType': 'pres',
+          'id[]': '$id',
+        }
+        ));
+    //print(response.headers);
+  }
+
+  Future<void> setSkin(id) async {
+    var response = await dio.post(
+        'https://www.lowadi.com/centre/pres/doUse',
+        data:  FormData.fromMap(
+            {
+              'id[]': '$id',
+              'action': 'putInCulture',
+              'page': '0',
+              'searchString': 'taille=all&etat=0&etatComparaison=g&utilisation=all',
+              'type': 'simple',
+              'recette': '10',
+              'recette': '10',
+              'redirectType': 'pres',
+              'engrais': 'none',
+            }
+        ));
+    //print(response.headers);
+  }
+
+
+  Future<void> logOut() async {
+
+    var firstResponse = await dio.get(
+        "https://www.lowadi.com");
+
     RegExp exp2 = RegExp("value=\"(.{32})\" name=");
     RegExpMatch? match2 = exp2.firstMatch(firstResponse.data);
     const start2 = 'value="';
@@ -51,64 +156,16 @@ class Network {
         .toLowerCase();
 
     var loginResponse = await dio.post(
-        "https://www.lowadi.com/site/doLogIn",
+        "https://www.lowadi.com/site/doLogOut",
         data: FormData.fromMap(
             {
-              code: code2,
-              'login': login,
-              'password': password,
-              'redirection': '',
-              'isBoxStyle': ''
+              'sid': '$code2',
             }
         ));
-    print(loginResponse.headers);
+    print('Log Out');
 
-  }
+    //dio.interceptors.clear();
 
-  // void lug() async {
-  //   var resp = await dio.get('https://www.lowadi.com/centre/pres');
-  // }
-
-  // void buyBox() async {
-  //   var nextResponse = await dio.post(
-  //       "https://www.lowadi.com/marche/achat",
-  //       data: FormData.fromMap(
-  //           {
-  //             'id': '111',
-  //             'mode': 'centre',
-  //             'nombre': '1',
-  //             'typeRedirection': 'box'
-  //           }
-  //       ));
-  //   print(nextResponse.data);
-  // }
-  //
-  Future<String> getMeadows() async {
-    var response = await dio.get(
-        "https://www.lowadi.com/centre/pres/");
-    return response.data;
-  }
-  
-  void collectSkin(id) async {
-    var response = await dio.post(
-        'https://www.lowadi.com/centre/pres/doUse',
-            data:  FormData.fromMap(
-        {
-          'searchString': 'taille%3Dall%26etat%3D0%26etatComparaison%3Dg%26utilisation%3Dall',
-          'page': '0',
-          'action': 'recolter',
-          'type': 'simple',
-          'redirectType': 'pres',
-          'id[]': '$id',
-          // 'message': 'recolte',
-          // 'taille': 'all',
-          // 'etat': '0',
-          // 'etatComparaison': 'g',
-          // 'utilisation': 'all',
-          // 'type': 'pres',
-        }
-        ));
-    print(response.headers);
   }
 
 }

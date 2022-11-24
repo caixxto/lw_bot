@@ -5,9 +5,7 @@ import 'package:lw/main/bloc/main_event.dart';
 import 'package:lw/main/bloc/main_state.dart';
 import 'package:lw/network.dart';
 
-
 class MainBloc extends Bloc<MainEvent, MainState> {
-
   final AccountRepository _repository = AccountRepository.instance;
   final List<String> ids = [];
 
@@ -15,22 +13,19 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     _initState();
 
     on<DataChanged>((event, state) async {
-     // _sendRequest();
+      // _sendRequest();
     });
 
     on<AddNewAccount>(_addNewAccount);
 
     on<Lug>((event, state) async {
-      await Future.delayed(Duration(milliseconds: 1000));
-      _loginRequest(_repository.getAccounts.first.login, _repository.getAccounts.first.password);
-      await Future.delayed(Duration(milliseconds: 1500));
-      _collectSkinRequest();
-
-
-    });
-
-    on<Lug2>((event, state) async {
-      _collectSkinRequest();
+      for (var i = 0; i < _repository.getAccounts.length; i++) {
+        final account = _repository.getAccounts;
+        await _loginRequest(account[i].login, account[i].password);
+        await _collectSkinRequest();
+        await _setSkinRequest();
+        await logoutRequest();
+      }
     });
   }
 
@@ -44,62 +39,65 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   void _addNewAccount(AddNewAccount event, Emitter<MainState> state) async {
     try {
-      final result = _repository.addNewAccount(Account(login: event.login, password: event.password));
+      final result = _repository
+          .addNewAccount(Account(login: event.login, password: event.password));
       _updateScreen();
     } catch (e) {
       emit(InitialState());
     }
   }
 
+  Future<void> logoutRequest() async {
+    ids.clear();
+    Network.dio.interceptors.clear();
+    print('Log Out');
+  }
 
-  void _loginRequest(login, password) async {
-    // var r1 = await Requests.post('https://www.lowadi.com/marche/achat', body: {
-    //   'id': '111',
-    //   'mode': 'centre',
-    //   'nombre': '1',
-    //   'typeRedirection': 'box'
-    // });
-    // //r1.raiseForStatus();
-    // print(r1.body);
-    // print(r1.headers);
-
-    // var session = Network.instance;
-    // //session.buyBox();
-    // final data = await session.getData();
-    // //print(data);
-    // parseData(data);
-
-    var session = Network.instance;
-    final acc = _repository.getAccounts;
-
-    session.login(login, password);
-
-    //emit(UpdateScreen(''));
+  Future<void> _loginRequest(login, password) async {
+    final session = Network.instance;
+    //Future.delayed(const Duration(milliseconds: 1500));
+     await session.login(login, password);
   }
 
   //collect all cows from meadows
-  void _collectSkinRequest() async {
-    var session = Network.instance;
+  Future<void> _collectSkinRequest() async {
+    final session = Network.instance;
+
     final data = await session.getMeadows();
-    session.collectSkin(_parseData(data));
+    //session.collectSkin(_parseData(data));
+    _parseData(data);
 
-    for(var i = 0; i < ids.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 500));
-     session.collectSkin(ids[i]);
+    for (var i = 0; i < ids.length; i++) {
+      await Future.delayed(Duration(seconds: 1), () {
+        session.collectSkin(ids[i]);
+        print('collect skin $i');
+      });
     }
+  }
 
+  //set new cows to meadows
+
+  Future<void> _setSkinRequest() async {
+    final session = Network.instance;
+    for (var i = 0; i < ids.length; i++) {
+      await Future.delayed(Duration(seconds: 1), () {
+          session.setSkin(ids[i]);
+          print('set skin $i');
+
+      });
+    }
   }
 
   //get meadows id
-  List<String> _parseData(data) {
-    var document = parse(data);
-    var lug = document.querySelectorAll("#id\\[\\]").length; //всего лугов
+  Future<void> _parseData(data) async {
+    final document = parse(data);
+    final lug = document.querySelectorAll("#id\\[\\]").length; //всего лугов
 
-    for(var i = 0; i < lug; i++) {
+    for (var i = 0; i < lug; i++) {
       var id = document.querySelectorAll("#id\\[\\]")[i].attributes.values.last;
       ids.add(id);
+      print('ids done $id');
     }
-    return ids;
+    //return ids;
   }
-
 }

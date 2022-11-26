@@ -7,6 +7,12 @@ class InitialState extends MainState {}
 
 class UpdateScreen extends MainState {
   final List<Account> accounts;
-  UpdateScreen(this.accounts);
+  final bool check;
+  final String status;
+  UpdateScreen(this.accounts, this.check, this.status);
+}
 
+class ErrorState extends MainState {
+  final String e;
+  ErrorState(this.e);
 }

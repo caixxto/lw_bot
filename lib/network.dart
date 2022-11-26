@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:html/parser.dart';
 
 class Network {
 
@@ -42,7 +46,6 @@ class Network {
     final code2 = match2![0]!
         .substring(startIndex2 + start2.length, endIndex2)
         .toLowerCase();
-    print('code returned');
 
     return code;
   }
@@ -63,13 +66,13 @@ class Network {
     final code2 = match2![0]!
         .substring(startIndex2 + start2.length, endIndex2)
         .toLowerCase();
-    print('code2 returned');
 
     return code2;
   }
 
-  Future<void> login(login, password) async {
+  Future<bool> login(login, password) async {
     create();
+    var ex = false;
 
     dio.interceptors.add(CookieManager(CookieJar()));
 
@@ -77,7 +80,7 @@ class Network {
         "https://www.lowadi.com");
     final data = firstResponse;
 
-    await Future.delayed(Duration(seconds: 1), () async {
+    await Future.delayed(const Duration(seconds: 1), () async {
       var loginResponse = await dio.post(
           "https://www.lowadi.com/site/doLogIn",
           data: FormData.fromMap(
@@ -89,18 +92,17 @@ class Network {
                 'isBoxStyle': ''
               }
           ));
-      print(loginResponse.headers);
+      ex = loginResponse.headers.toString().contains('hasLoggedIn');
+
     });
 
-    //print(loginResponse.headers);
-    print('Log In $login');
+    return ex ? false : true;
 
   }
 
   Future<String> getMeadows() async {
     var response = await dio.get(
         "https://www.lowadi.com/centre/pres/");
-    print('Get Meadows');
     return response.data;
   }
 
@@ -118,6 +120,26 @@ class Network {
         }
         ));
     //print(response.headers);
+  }
+
+  Future<void> sellSkin() async {
+    var response = await dio.post(
+        'https://www.lowadi.com/marche/vente',
+        data:  FormData.fromMap(
+            {
+              'id': '456',
+              'nombre': '10000',
+              'mode': 'eleveur',
+            }
+        ));
+  }
+
+  Future<String> checkEquus() async {
+    var response = await dio.get(
+        'https://www.lowadi.com/centre/pres/');
+    final document = parse(response.data);
+
+    return response.data;
   }
 
   Future<void> setSkin(id) async {

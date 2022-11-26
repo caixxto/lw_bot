@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lw/global_vars.dart';
 import 'package:lw/main/bloc/main_bloc.dart';
 import 'package:lw/main/bloc/main_state.dart';
 import 'package:lw/styles/colors.dart';
@@ -54,11 +55,11 @@ class MainScreen extends StatelessWidget {
                               context.read<MainBloc>().add(AddNewAccount(_loginController.text, _passwordController.text));
                               Navigator.of(context).pop();
                               },
-                            child: Text('Log in')
+                            child: const Text('Log in')
                         ),
                         ElevatedButton(
                             onPressed: () { Navigator.of(context).pop(); },
-                            child: Text('Close')
+                            child: const Text('Close')
                         ),
                       ],
                     );
@@ -94,9 +95,11 @@ class MainScreen extends StatelessWidget {
       body: BlocBuilder<MainBloc, MainState>(builder: (context, state) {
         switch (state.runtimeType) {
           case InitialState:
-            return Container();
+            return const CircularProgressIndicator();
           case UpdateScreen:
             var accounts = (state as UpdateScreen).accounts;
+            var check = state.check;
+            var status = state.status;
             return Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,7 +113,10 @@ class MainScreen extends StatelessWidget {
                       final account = accounts[index];
                       return GestureDetector(
                         onTap: () {},
-                        child: Text(account.login),
+                        child: Text(
+                            account.login,
+                            style: check ? CustomStyles.defaultText : CustomStyles.appBarText
+                        ),
                       );
                     })
                   ),
@@ -118,10 +124,12 @@ class MainScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     color: Colors.grey,
-                    child: Column(
-                      children: [
-                        Text('4444444444444444444444444'),
-                      ],
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text('Status: $status'),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -136,7 +144,7 @@ class MainScreen extends StatelessWidget {
               ],
             );
         }
-        return Placeholder();
+        return const Placeholder();
       }),
     );
   }

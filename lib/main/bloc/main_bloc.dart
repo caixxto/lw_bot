@@ -8,6 +8,7 @@ import 'package:lw/network.dart';
 class MainBloc extends Bloc<MainEvent, MainState> {
   final AccountRepository _repository = AccountRepository.instance;
   final List<String> ids = [];
+  final List<String> skip = [];
 
   MainBloc() : super(InitialState()) {
     _initState();
@@ -21,70 +22,110 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     on<Lug>((event, state) async {
       for (var i = 0; i < _repository.getAccounts.length; i++) {
         final account = _repository.getAccounts;
-        await _loginRequest(account[i].login, account[i].password);
-        await _collectSkinRequest();
-        await _setSkinRequest();
-        await logoutRequest();
+        var exp = true;
+        var numRetries = 0;
+
+        do {
+          if (exp) {
+            print('Попытка входа ${account[i].login}');
+            exp = await _loginRequest(account[i].login, account[i].password);
+            numRetries++;
+          } else {
+            _updateScreen(false, 'Вход выполнен ${account[i].login}');
+            print('Вход выполнен ${account[i].login}');
+          }
+        } while ((exp) && (numRetries < 5));
+
+        if (exp == false) {
+          await _collectSkinRequest();
+          await _sellSkinRequest();
+          await _setSkinRequest();
+          await _logoutRequest();
+        } else {
+          skip.add(account[i].login);
+        }
+        print('Пропущенные аккаунты: $skip');
       }
     });
   }
 
   Future<void> _initState() async {
-    _updateScreen();
+    _updateScreen(false, '');
   }
 
-  void _updateScreen() async {
-    emit(UpdateScreen(await _repository.getAccounts));
+  void _updateScreen(check, status) {
+    emit(UpdateScreen(_repository.getAccounts, check, status));
   }
 
   void _addNewAccount(AddNewAccount event, Emitter<MainState> state) async {
     try {
       final result = _repository
           .addNewAccount(Account(login: event.login, password: event.password));
-      _updateScreen();
+      _updateScreen(false, '${event.login} добавлен');
     } catch (e) {
-      emit(InitialState());
+      _updateScreen(false, 'error');
     }
   }
 
-  Future<void> logoutRequest() async {
+  Future<void> _logoutRequest() async {
     ids.clear();
-    Network.dio.interceptors.clear();
-    print('Log Out');
+    _updateScreen(false, 'Выход');
+    print('Выход');
   }
 
-  Future<void> _loginRequest(login, password) async {
+  Future<void> _sellSkinRequest() async {
     final session = Network.instance;
-    //Future.delayed(const Duration(milliseconds: 1500));
-     await session.login(login, password);
+    var res = await session.checkEquus();
+    var document = parse(res);
+    final htmlEquus = document.querySelector("#reserve")!.innerHtml;
+    final equus = int.parse(htmlEquus.replaceAll(' ', ''));
+
+    if ((equus < 37500) && (equus != null)) {
+      await session.sellSkin();
+      _updateScreen(false, 'Продаю кожу');
+      print('Продать кожу');
+    }
+  }
+
+  Future<bool> _loginRequest(login, password) async {
+    Network.dio.interceptors.clear();
+    final session = Network.instance;
+    var res = await session.login(login, password);
+    _updateScreen(false, 'Попытка входа в $login');
+
+    return res;
   }
 
   //collect all cows from meadows
   Future<void> _collectSkinRequest() async {
-    final session = Network.instance;
+    try {
+      final session = Network.instance;
+      final data = await session.getMeadows();
+      _parseData(data);
 
-    final data = await session.getMeadows();
-    //session.collectSkin(_parseData(data));
-    _parseData(data);
-
-    for (var i = 0; i < ids.length; i++) {
-      await Future.delayed(Duration(seconds: 1), () {
-        session.collectSkin(ids[i]);
-        print('collect skin $i');
-      });
+      for (var i = 0; i < ids.length; i++) {
+        await Future.delayed(const Duration(milliseconds: 500), () {
+          session.collectSkin(ids[i]);
+          _updateScreen(false, 'Собираю ${i + 1}');
+        });
+      }
+    } catch (e) {
+      _updateScreen(false, 'error');
     }
   }
 
   //set new cows to meadows
-
   Future<void> _setSkinRequest() async {
-    final session = Network.instance;
-    for (var i = 0; i < ids.length; i++) {
-      await Future.delayed(Duration(seconds: 1), () {
+    try {
+      final session = Network.instance;
+      for (var i = 0; i < ids.length; i++) {
+        await Future.delayed(const Duration(milliseconds: 500), () {
           session.setSkin(ids[i]);
-          print('set skin $i');
-
-      });
+          _updateScreen(false, 'Коровы ${i + 1}');
+        });
+      }
+    } catch (e) {
+      _updateScreen(false, 'error');
     }
   }
 
@@ -96,8 +137,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     for (var i = 0; i < lug; i++) {
       var id = document.querySelectorAll("#id\\[\\]")[i].attributes.values.last;
       ids.add(id);
-      print('ids done $id');
     }
-    //return ids;
   }
 }

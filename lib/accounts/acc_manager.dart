@@ -13,20 +13,10 @@ class AccountRepository {
 
   static AccountRepository get instance => _instance;
 
-  //final List<Account> _list = List.empty(growable: true);
-  final List<Account> _list = [
-    Account(login: 'Reyunnokzh', password: 'Zheanapsas'),
-    Account(login: 'Kentines', password: 'zvXqQHjiDD'),
-    Account(login: 'Nalesbavap', password: 'HailHail'),
-    Account(login: 'НиколайБасков', password: 'вечером не ходи'),
-    Account(login: 'Pryce', password: 'JJDPY3XgnF'),
-    Account(login: 'Katabvobak', password: 'KaanKaan'),
-    Account(login: 'Between Two', password: 'starsthatitbuilds'),
-    Account(login: 'Shooting', password: 'theysayitgtscldr'),
-    Account(login: 'Sudden Attraction', password: 'mindthatdistracts'),
-    Account(login: 'Туманник', password: 'ypdoeh'),
-
-  ];
+  final List<Account> _list = List.empty(growable: true);
+  // final List<Account> _list = [
+  //   Account(login: 'dusk till dawn', password: 'ctmiuq'),
+  // ];
 
   List<Account> get getAccounts => _list;
 

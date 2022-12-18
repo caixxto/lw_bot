@@ -20,13 +20,13 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(41, 41, 41, 100),
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black26,
+        backgroundColor: Colors.black12,
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black26,
+              backgroundColor: Colors.black12,
             ),
             onPressed: () {
               showDialog<void>(
@@ -34,7 +34,7 @@ class MainScreen extends StatelessWidget {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       backgroundColor: Colors.black12,
-                      title: Text('Добавить аккаунт'),
+                      title: const Text('Добавить аккаунт'),
                       actions: [
                         TextFieldWidget(
                           keyboardType: TextInputType.text,
@@ -72,7 +72,7 @@ class MainScreen extends StatelessWidget {
           const SizedBox(width: 30),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black26,
+              backgroundColor: Colors.black12,
             ),
             onPressed: () {
               context.read<MainBloc>().add(Lug());
@@ -82,12 +82,33 @@ class MainScreen extends StatelessWidget {
           const SizedBox(width: 30),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black26,
+              backgroundColor: Colors.black12,
             ),
             onPressed: () {
               context.read<MainBloc>().add(Lug2());
             },
             child: const Text('Собрать мастерские',
+                style: CustomStyles.appBarText),
+          ),
+          const SizedBox(width: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black12,
+            ),
+            onPressed: () {
+              //context.read<MainBloc>().add(Lug2());
+            },
+            child: const Text('Выкупить табун',
+                style: CustomStyles.appBarText),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black12,
+            ),
+            onPressed: () {
+              context.read<MainBloc>().add(ParseData());
+            },
+            child: const Text('Спарсить данные',
                 style: CustomStyles.appBarText),
           )
         ],
@@ -96,6 +117,79 @@ class MainScreen extends StatelessWidget {
         switch (state.runtimeType) {
           case InitialState:
             return const CircularProgressIndicator();
+          case UpdateData:
+            var accounts = (state as UpdateData).accounts;
+            var data = state.accountData;
+            var check = state.check;
+            return Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  alignment: Alignment.topCenter,
+                  width: 150,
+                  color: const Color.fromRGBO(34, 34, 34, 100),
+                  child: SingleChildScrollView(
+                    child: Column(
+                        children: List.generate(accounts.length, (index) {
+                          final account = accounts[index];
+                          return GestureDetector(
+                            onTap: () {
+                              context.read<MainBloc>().add(ChangeAccount(index));
+                            },
+                            child: Text(
+                                account.login,
+                                style: check ? CustomStyles.defaultText : CustomStyles.appBarText
+                            ),
+                          );
+                        })
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: const Color.fromRGBO(41, 41, 41, 100),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Text(
+                              'Экю: ${data.equus}',
+                              style: CustomStyles.defaultText,
+                            ),
+                            Text(
+                              'Пропы: ${data.passes}',
+                              style: CustomStyles.defaultText,
+                            ),
+                            Column(
+                              children: List.generate(data.market.length, (index) {
+                                return Row(
+                                  children: [
+                                    SizedBox(width: 10),
+                                    Image.network('${data.market[index].image}'),
+                                    SizedBox(width: 10),
+                                    //Text('${data.market[index].name}', style: CustomStyles.defaultText),
+                                    Text('${data.market[index].count}', style: CustomStyles.defaultText)
+                                  ],
+                                );
+                              })
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                    width: 200,
+                    color: const Color.fromRGBO(34, 34, 34, 100),
+                    child: Column(
+                      children: [
+                        Text(''),
+                      ],
+                    ))
+              ],
+            );
           case UpdateScreen:
             var accounts = (state as UpdateScreen).accounts;
             var check = state.check;
@@ -103,31 +197,38 @@ class MainScreen extends StatelessWidget {
             return Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
+                  alignment: Alignment.topCenter,
                   width: 150,
-                  color: Colors.blueGrey,
-                  child: Column(
-                    children: List.generate(accounts.length, (index) {
-                      final account = accounts[index];
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                            account.login,
-                            style: check ? CustomStyles.defaultText : CustomStyles.appBarText
-                        ),
-                      );
-                    })
+                  color: const Color.fromRGBO(34, 34, 34, 100),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: List.generate(accounts.length, (index) {
+                        final account = accounts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            context.read<MainBloc>().add(ChangeAccount(index));
+                          },
+                          child: Text(
+                              account.login,
+                              style: check ? CustomStyles.defaultText : CustomStyles.appBarText
+                          ),
+                        );
+                      })
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    color: Colors.grey,
+                    color: const Color.fromRGBO(41, 41, 41, 100),
                     child: Center(
                       child: Column(
                         children: [
-                          Text('Status: $status'),
+                          Text(
+                              'Статус: $status',
+                            style: CustomStyles.defaultText,
+                          ),
                         ],
                       ),
                     ),
@@ -135,7 +236,7 @@ class MainScreen extends StatelessWidget {
                 ),
                 Container(
                     width: 200,
-                    color: Colors.blueGrey,
+                    color: const Color.fromRGBO(34, 34, 34, 100),
                     child: Column(
                       children: [
                         Text(''),

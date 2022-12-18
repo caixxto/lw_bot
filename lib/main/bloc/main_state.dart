@@ -12,6 +12,14 @@ class UpdateScreen extends MainState {
   UpdateScreen(this.accounts, this.check, this.status);
 }
 
+class UpdateData extends MainState {
+  final List<Account> accounts;
+  final AccountData accountData;
+  final bool check;
+
+  UpdateData(this.accountData, this.accounts, this.check);
+}
+
 class ErrorState extends MainState {
   final String e;
   ErrorState(this.e);

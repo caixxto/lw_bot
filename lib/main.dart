@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lw/login/bloc/login_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw/login/start_screen.dart';
 import 'package:lw/main/main_screen.dart';
-import 'package:lw/styles/text_styles.dart';
 import 'main/bloc/main_bloc.dart';
 
 void main() async {
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MainScreen()
+      home: MainScreen(),
     );
   }
 }

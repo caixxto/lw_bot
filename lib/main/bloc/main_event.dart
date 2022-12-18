@@ -11,3 +11,10 @@ class AddNewAccount extends MainEvent {
 class Lug extends MainEvent {}
 
 class Lug2 extends MainEvent {}
+
+class ParseData extends MainEvent {}
+
+class ChangeAccount extends MainEvent {
+  final int id;
+  ChangeAccount(this.id);
+}

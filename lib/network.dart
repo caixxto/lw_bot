@@ -142,6 +142,14 @@ class Network {
     return response.data;
   }
 
+  Future<String> getData() async { //get all data from market page
+    var response = await dio.get(
+        'https://www.lowadi.com/marche/boutique');
+    //final document = parse(response.data);
+
+    return response.data;
+  }
+
   Future<void> setSkin(id) async {
     var response = await dio.post(
         'https://www.lowadi.com/centre/pres/doUse',

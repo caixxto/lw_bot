@@ -32,9 +32,6 @@ class BlackMarketRepository {
   static BlackMarketRepository get instance => _instance;
 
   final List<BlackMarket> _list = List.empty(growable: true);
-  // final List<BlackMarket> _list = [
-  //   BlackMarket('Папирус Плутоса', 'parchemin-ploutos', 'https://www.lowadi.com/media/equideo/image/produits/32/parchemin-ploutos.png'),
-  // ];
 
   List<BlackMarket> get getBlackMarket => _list;
 
@@ -51,11 +48,21 @@ class AccountRepository {
 
   final List<Account> _list = List.empty(growable: true);
   // final List<Account> _list = [
-  //   Account(login: 'Пьеро', password: 'неудаляйтеакк'),
-  //   Account(login: 'Лаймишь', password: 'VzJURxMYqc'),
-  //   Account(login: 'Карфина', password: '13h81Tc'),
-  //   Account(login: 'Lira Mira', password: 'HhJBkx0'),
   //   Account(login: 'Зелёная стрела', password: 'SiOiJKGqF'),
+  //   Account(login: 'Pistol Whip', password: 'canseeclearly'),
+  //   Account(login: 'Generation***', password: 'amzfljamzflj'),
+  //   Account(login: 'Augmented Porcupin', password: 'llitflr'),
+  //   Account(login: 'Oblivitron', password: 'M9I2mRX'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
+  //   Account(login: 'Зелёная', password: 'SiOiJKGqF'),
   // ];
 
   List<Account> get getAccounts => _list;
@@ -74,9 +81,6 @@ class AccountDataRepository {
   static AccountDataRepository get instance => _instance;
 
   final List<AccountData> _list = List.empty(growable: true);
-  // final List<Account> _list = [
-  //   Account(login: 'caixxto', password: 'ubatcha'),
-  // ];
 
   List<AccountData> get getAccountsData => _list;
 

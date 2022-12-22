@@ -1,11 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:html/parser.dart';
 import 'package:lw/accounts/acc_manager.dart';
 import 'package:lw/main/bloc/main_event.dart';
 import 'package:lw/main/bloc/main_state.dart';
 import 'package:lw/network.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:file_picker/file_picker.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   final AccountRepository _repository = AccountRepository.instance;
@@ -124,6 +131,53 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       }
     });
 
+    on<OpenList>((event, state) async {
+      _openFile();
+    });
+
+    on<SaveDataExcel>((event, state) async {
+      final accounts = _repository.getAccounts;
+      final data = _repositoryData.getAccountsData;
+      final rows = accounts.length;
+      List<String> bmNames = [];
+      List<int> bmCount = [];
+
+      data[0].market.forEach((element) {
+        bmNames.add(element.name);
+      });
+
+      final Workbook workbook = Workbook();
+      final Worksheet sheet = workbook.worksheets[0];
+      
+      sheet.importList(bmNames, 1, 5, false);
+
+      for (var i = 0; i < rows; i++) {
+        sheet.getRangeByName('A1').setText('№');
+        sheet.getRangeByName('B1').setText('Ник');
+        sheet.getRangeByName('C1').setText('Пароль');
+        sheet.getRangeByName('D1').setText('Ор');
+        sheet.getRangeByName('A${i+2}').setNumber(i+1);
+        sheet.getRangeByName('B${i+2}').setText(accounts[i].login);
+        sheet.getRangeByName('C${i+2}').setText(accounts[i].password);
+        sheet.getRangeByName('D${i+2}').setValue(data[i].or);
+        data[i].market.forEach((element) {
+          bmCount.add(element.count);
+        });
+        sheet.importList(bmCount, 2+i, 5, false);
+        bmCount.clear();
+      }
+
+      final List<int> bytes = workbook.saveAsStream();
+      workbook.dispose();
+
+      final String path = (await getApplicationSupportDirectory()).path;
+      final String fileName = '$path\\Output.xlsx';
+      final File file = File(fileName);
+      await file.writeAsBytes(bytes, flush: true);
+      OpenFile.open(fileName);
+
+    });
+
     on<ParseData>((event, state) async {
       for (var i = 0; i < _repository.getAccounts.length; i++) {
         final account = _repository.getAccounts;
@@ -148,8 +202,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         } else {
           await _getDataFromMarket(account[i]);
           skip.add(account[i].login);
+         // _updateScreen(false, 'Пропущенные ${skip.toString()}');
         }
       }
+      _updateScreen(false, 'Пропущенные ${skip.toString()}');
+
     });
 
     on<ChangeAccount>((event, state) async {
@@ -158,9 +215,39 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   }
 
+  Future<void> _openFile() async {
+    var filePath = '';
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      filePath = result.files.single.path!;
+    } else {
+
+    }
+
+    final File file = File(filePath);
+
+    var text = File(filePath).readAsLinesSync();
+    var textList = text.toList();
+    var strings = textList.length;
+
+    for (var i = 0; i < strings; i++) {
+      var str = textList[i];
+      var login = str.substring(0, str.indexOf(':'));
+      var password = str.substring(str.indexOf(':') + 1);
+
+      _repository.addNewAccount(Account(login: login, password: password));
+    }
+
+    _updateScreen(false, 'Аккаунтов добавлено: $strings');
+
+  }
+
   Future<void> _initState() async {
     _updateScreen(false, '');
   }
+
+
 
   Future<void> _getDataFromMarket(account) async {
     final session = Network.instance;

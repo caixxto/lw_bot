@@ -47,6 +47,11 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   cookie_jar: ^3.0.1
   html: ^0.15.1
+  syncfusion_flutter_datagrid_export: ^20.3.61-beta
+  path_provider: ^2.0.11
+  open_file: ^3.2.1
+  file_picker: ^4.6.1
+
 
 dev_dependencies:
   flutter_test:

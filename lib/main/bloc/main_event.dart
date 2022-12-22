@@ -14,6 +14,10 @@ class Lug2 extends MainEvent {}
 
 class ParseData extends MainEvent {}
 
+class SaveDataExcel extends MainEvent {}
+
+class OpenList extends MainEvent {}
+
 class ChangeAccount extends MainEvent {
   final int id;
   ChangeAccount(this.id);

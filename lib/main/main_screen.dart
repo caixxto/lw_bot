@@ -185,7 +185,12 @@ class MainScreen extends StatelessWidget {
                     color: const Color.fromRGBO(34, 34, 34, 100),
                     child: Column(
                       children: [
-                        Text(''),
+                        ElevatedButton(
+                      onPressed: () {
+                        context.read<MainBloc>().add(SaveDataExcel());
+
+                      },
+        child: Text('Save')),
                       ],
                     ))
               ],
@@ -239,7 +244,12 @@ class MainScreen extends StatelessWidget {
                     color: const Color.fromRGBO(34, 34, 34, 100),
                     child: Column(
                       children: [
-                        Text(''),
+                        ElevatedButton(
+                            onPressed: () {
+                              context.read<MainBloc>().add(OpenList());
+                            },
+                            child: Text('Open'),
+                        ),
                       ],
                     ))
               ],

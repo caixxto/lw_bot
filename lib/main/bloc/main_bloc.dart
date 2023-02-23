@@ -21,11 +21,28 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   final List<String> ids = [];
   final List<String> skip = [];
   final List<double> accountData = [];
+  late int index = 0;
   final href = 'https://www.lowadi.com/media/equideo/image/produits/32/';
   List blackMarket = [
+    {'name': 'Кожа', 'html': 'ressource-cuir'},
+    {'name': 'Экскременты', 'html': 'crottin'},
+    {'name': 'Длани Морфея', 'html': 'bras-morphee'},
+    {'name': 'Философский Камень', 'html': 'pierre-philosophale'},
+    {'name': 'Хронограф Хроноса', 'html': 'sablier-chronos'},
+    {'name': 'Кровь Медузы', 'html': 'sang-meduse'},
+    {'name': 'Набор гармонии', 'html': 'pack-harmonie'},
+    {'name': 'Золотое яблоко', 'html': 'pomme-or'},
+    {'name': 'Ахиллесова пята', 'html': 'talon-achille'},
+    {'name': 'Двухсторонний медальон', 'html': 'double-face'},
+    {'name': 'Одеяние Ириды', 'html': 'iris-coat'},
+    {'name': 'Безграничный Луч Гелиоса', 'html': 'rayon-helios-illimite'},
+    {'name': 'Луч Гелиоса Ow', 'html': 'rayon-helios-ow'},
+    {'name': 'Набор Посейдона', 'html': 'pack-poseidon'},
+    {'name': 'Дар Гестии', 'html': 'don-hestia'},
+    {'name': 'Кат Ши - Манул', 'html': 'compagnon-cat-sidhe-2'}, //???
+    {'name': 'Состязание титанов', 'html': 'defi-titans'}, //???
     {'name': 'Рог изобилия', 'html': 'corne-abondance'},
     {'name': 'Золотое Руно', 'html': 'toison-or'},
-    {'name': 'Длани Морфея', 'html': 'bras-morphee'},
     {'name': 'Живая Вода', 'html': 'eau-jouvence'},
     {'name': 'Кусочек облака', 'html': 'fragment-nuage'},
     {'name': 'Очки роста', 'html': 'vieillissement'},
@@ -36,11 +53,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     {'name': 'Черная Орхидея', 'html': 'orchidee-noire'},
     {'name': 'Набор Никты', 'html': 'pack-nyx'},
     {'name': 'Папирус Плутос', 'html': 'parchemin-ploutos'},
-    {'name': 'Философский Камень', 'html': 'pierre-philosophale'},
-    {'name': 'Хронограф Хроноса', 'html': 'sablier-chronos'},
-    {'name': 'Ахиллесова пята', 'html': 'talon-achille'},
     {'name': 'Посох Плодовитости', 'html': 'baton-fertilite'},
-    {'name': 'Дар Гестии', 'html': 'don-hestia'},
     {'name': 'Молния Зевса', 'html': 'eclair-zeus'},
     {'name': 'Стрела Артемиды', 'html': 'fleche-artemis'},
     {'name': 'Слезы Афродиты', 'html': 'larmes-aphrodite'},
@@ -55,22 +68,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     {'name': 'Плетение кос-пуговичек', 'html': 'button-braided-mane'},
     {'name': 'Брошь Катрины', 'html': 'catrina-brooch'},
     {'name': 'Волшебная шляпа', 'html': 'chapeau-magique'},
-    {'name': 'Двухсторонний медальон', 'html': 'double-face'},
-    {'name': 'Одеяние Ириды', 'html': 'iris-coat'},
     {'name': 'Лира Апполона', 'html': 'lyre-apollon'},
-    {'name': 'Набор гармонии', 'html': 'pack-harmonie'},
-    {'name': 'Золотое яблоко', 'html': 'pomme-or'},
     {'name': 'Винтажное яблоко', 'html': 'pomme-vintage'},
-    {'name': 'Безграничный Луч Гелиоса', 'html': 'rayon-helios-illimite'},
-    {'name': 'Луч Гелиоса Ow', 'html': 'rayon-helios-ow'},
-    {'name': 'Кровь Медузы', 'html': 'sang-meduse'},
     {'name': 'Печать тьмы', 'html': 'sceau-apocalypse'},
     {'name': 'Походный дневник', 'html': 'trail-riding-diary'},
     {'name': 'Парадное яблоко', 'html': 'parade-apple'},
     {'name': 'Оригинальный Дух путешествий', 'html': 'esprit-nomade-originaux'},
     {'name': 'Исторический Дух путешествий', 'html': 'esprit-nomade-histoire'},
     {'name': 'Бонус-набор', 'html': 'pack-bonus'},
-    {'name': 'Набор Посейдона', 'html': 'pack-poseidon'},
     {'name': 'Пакет эльфов', 'html': 'pack-xmas-gear-2'},
     {'name': 'Богатство Креза', 'html': 'pactole-cresus'},
     {'name': 'Вальтрап рыцаря', 'html': 'tapis-knight'},
@@ -149,21 +154,25 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final Workbook workbook = Workbook();
       final Worksheet sheet = workbook.worksheets[0];
       
-      sheet.importList(bmNames, 1, 5, false);
+      sheet.importList(bmNames, 1, 7, false);
 
       for (var i = 0; i < rows; i++) {
         sheet.getRangeByName('A1').setText('№');
         sheet.getRangeByName('B1').setText('Ник');
         sheet.getRangeByName('C1').setText('Пароль');
         sheet.getRangeByName('D1').setText('Ор');
+        sheet.getRangeByName('E1').setText('Экю');
+        sheet.getRangeByName('F1').setText('Пропы');
         sheet.getRangeByName('A${i+2}').setNumber(i+1);
         sheet.getRangeByName('B${i+2}').setText(accounts[i].login);
         sheet.getRangeByName('C${i+2}').setText(accounts[i].password);
         sheet.getRangeByName('D${i+2}').setValue(data[i].or);
+        sheet.getRangeByName('E${i+2}').setValue(data[i].equus);
+        sheet.getRangeByName('F${i+2}').setValue(data[i].passes);
         data[i].market.forEach((element) {
           bmCount.add(element.count);
         });
-        sheet.importList(bmCount, 2+i, 5, false);
+        sheet.importList(bmCount, 2+i, 7, false);
         bmCount.clear();
       }
 
@@ -197,22 +206,98 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
         if (exp == false) {
           await _getDataFromMarket(account[i]);
-          //print('get data from ${account[i].login}');
           await _logoutRequest();
         } else {
           await _getDataFromMarket(account[i]);
           skip.add(account[i].login);
-         // _updateScreen(false, 'Пропущенные ${skip.toString()}');
         }
       }
       _updateScreen(false, 'Пропущенные ${skip.toString()}');
 
     });
 
+    on<BuyHorses>((event, state) async {
+      var pause = event.pause;
+
+      for (var i = 0; i < _repository.getAccounts.length; i++) {
+        final account = _repository.getAccounts;
+        var exp = true;
+        var numRetries = 0;
+        var list = [];
+
+        do {
+          if (exp) {
+            print('Попытка входа ${account[i].login}');
+            exp = await _loginRequest(account[i].login, account[i].password);
+            numRetries++;
+          } else {
+            _updateScreen(false, 'Вход выполнен ${account[i].login}');
+            print('Вход выполнен ${account[i].login}');
+          }
+        } while ((exp) && (numRetries < 5));
+
+        if (exp == false) {
+          var page = 0;
+          do {
+            list = await _getDataFromPrive();
+            page++;
+            print('page $page');
+            for (var i = 0; i < list.length; i++) {
+              var a = list[i].substring(0, 10);
+              var b = list[i].substring(11, 19);
+              var c = list[i].substring(20, 30);
+              var d = list[i].substring(31, 36);
+              var e = list[i].substring(37, 47);
+              var f = list[i].substring(48, 80);
+              var g = list[i].substring(81, 86);
+              var h = list[i].substring(87, 119);
+              await _buyHorse(a, b, c, d, e, f, g, h, pause);
+              print('buy horse ${i+1}');
+            }
+          } while (list.isNotEmpty);
+          list.clear();
+          await _logoutRequest();
+        }
+      }
+      _updateScreen(false, 'выкупаю блять');
+
+    });
+
     on<ChangeAccount>((event, state) async {
+      index = event.id;
       emit(UpdateData(_repositoryData.getAccountsData[event.id], _repository.getAccounts, false));
     });
 
+    on<DeleteAccount>((event, state) async {
+      var acc = _repository.getAccounts[index].login;
+      _repository.deleteAccount(index);
+      emit(UpdateScreen(_repository.getAccounts, true, '$acc удален'));
+    });
+
+  }
+
+  Future<List<String>> _getDataFromPrive() async {
+    final session = Network.instance;
+    var res = await session.getHorses();
+     var document = parse(res);
+     var lots = document.querySelectorAll(".spacer-large-top");
+     final List<String> list = [];
+    for (var i = 1; i < lots.length; i++){
+      var command = lots[i].getElementsByTagName('script')[0].innerHtml;
+      command = command.substring(command.indexOf('AjaxJSON'), command.indexOf('}; return false;'));
+      const start = "{'params': '";
+      const end = "'}))";
+      final startIndex = command.indexOf(start);
+      final endIndex = command.indexOf(end, startIndex + start.length);
+      final comm = command.substring(startIndex + start.length, endIndex);
+      list.add(comm);
+    }
+    return list;
+  }
+
+  Future<void> _buyHorse(a, b, c, d, e, f, g, h, pause) async {
+    final session = Network.instance;
+    await session.buyHorse(a, b, c, d, e, f, g, h, pause);
   }
 
   Future<void> _openFile() async {
@@ -271,6 +356,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     _repositoryData.addNewData(AccountData(account: account, passes: passes, equus: equus, or: or, market: bm));
 
+  }
+
+  Future<void> _getDataFromMeadows(account) async {
+    //TODO: get data from meadows
   }
 
   void _updateScreen(check, status) {

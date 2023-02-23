@@ -17,6 +17,7 @@ class MainScreen extends StatelessWidget {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +97,7 @@ class MainScreen extends StatelessWidget {
               backgroundColor: Colors.black12,
             ),
             onPressed: () {
-              //context.read<MainBloc>().add(Lug2());
+              context.read<MainBloc>().add(BuyHorses(500));
             },
             child: const Text('Выкупить табун',
                 style: CustomStyles.appBarText),
@@ -165,9 +166,9 @@ class MainScreen extends StatelessWidget {
                               children: List.generate(data.market.length, (index) {
                                 return Row(
                                   children: [
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Image.network('${data.market[index].image}'),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     //Text('${data.market[index].name}', style: CustomStyles.defaultText),
                                     Text('${data.market[index].count}', style: CustomStyles.defaultText)
                                   ],
@@ -186,11 +187,10 @@ class MainScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         ElevatedButton(
-                      onPressed: () {
-                        context.read<MainBloc>().add(SaveDataExcel());
-
-                      },
-        child: Text('Save')),
+                            onPressed: () {
+                              context.read<MainBloc>().add(SaveDataExcel());
+                            },
+                            child: const Text('Save')),
                       ],
                     ))
               ],
@@ -245,10 +245,16 @@ class MainScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         ElevatedButton(
-                            onPressed: () {
-                              context.read<MainBloc>().add(OpenList());
-                            },
-                            child: Text('Open'),
+                          onPressed: () {
+                            context.read<MainBloc>().add(OpenList());
+                          },
+                          child: const Text('Open txt file'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<MainBloc>().add(DeleteAccount());
+                          },
+                          child: const Text('Delete account'),
                         ),
                       ],
                     ))

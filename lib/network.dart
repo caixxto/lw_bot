@@ -134,6 +134,28 @@ class Network {
         ));
   }
 
+  Future<String> getHorses() async {
+    var response = await dio.get(
+        "https://www.lowadi.com/marche/vente/?type=prive&typeSave=1&");
+    return response.data;
+  }
+
+  Future<void> buyHorse(a, b, c, d, e, f, g, h, pause) async {
+    await Future.delayed(Duration(milliseconds: pause), () async {
+    var response = await dio.post(
+        'https://www.lowadi.com/marche/vente/prive/doAcheter',
+        data: FormData.fromMap(
+            {
+              a: b,
+              c: d,
+              e: f,
+              g: h
+            }
+        ));
+    print(response.data);
+    });
+  }
+
   Future<String> checkEquus() async {
     var response = await dio.get(
         'https://www.lowadi.com/centre/pres/');
@@ -147,6 +169,7 @@ class Network {
         'https://www.lowadi.com/marche/boutique');
     return response.data;
   }
+
 
   Future<void> setSkin(id) async {
     var response = await dio.post(

@@ -22,3 +22,10 @@ class ChangeAccount extends MainEvent {
   final int id;
   ChangeAccount(this.id);
 }
+
+class DeleteAccount extends MainEvent {}
+
+class BuyHorses extends MainEvent {
+  final int pause;
+  BuyHorses(this.pause);
+}

@@ -142,11 +142,9 @@ class Network {
     return response.data;
   }
 
-  Future<String> getData() async { //get all data from market page
+  Future<String> getData() async {
     var response = await dio.get(
         'https://www.lowadi.com/marche/boutique');
-    //final document = parse(response.data);
-
     return response.data;
   }
 

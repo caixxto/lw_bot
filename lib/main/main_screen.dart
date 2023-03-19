@@ -16,6 +16,7 @@ class MainScreen extends StatelessWidget {
 
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _pauseController = TextEditingController();
 
 
   @override
@@ -97,10 +98,16 @@ class MainScreen extends StatelessWidget {
               backgroundColor: Colors.black12,
             ),
             onPressed: () {
-              context.read<MainBloc>().add(BuyHorses(500));
+              context.read<MainBloc>().add(BuyHorses(int.parse(_pauseController.text)));
             },
             child: const Text('Выкупить табун',
                 style: CustomStyles.appBarText),
+          ),
+          SizedBox(
+            width: 100,
+            child: TextField(
+              controller: _pauseController,
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(

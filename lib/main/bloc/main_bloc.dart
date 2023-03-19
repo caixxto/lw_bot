@@ -241,7 +241,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           do {
             list = await _getDataFromPrive();
             page++;
-            print('page $page');
             for (var i = 0; i < list.length; i++) {
               var a = list[i].substring(0, 10);
               var b = list[i].substring(11, 19);
@@ -252,14 +251,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
               var g = list[i].substring(81, 86);
               var h = list[i].substring(87, 119);
               await _buyHorse(a, b, c, d, e, f, g, h, pause);
-              print('buy horse ${i+1}');
+              _updateScreen(false, 'Страница: $page Лошадь: ${i+1}');
             }
           } while (list.isNotEmpty);
           list.clear();
           await _logoutRequest();
         }
       }
-      _updateScreen(false, 'выкупаю блять');
+      _updateScreen(false, 'Выкуп окончен');
 
     });
 
